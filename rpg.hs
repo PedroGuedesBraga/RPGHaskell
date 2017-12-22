@@ -1,4 +1,6 @@
-﻿import System.Random
+import System.Random
+import qualified System.Process as SP
+
 {-Definicao do tipo "Player" utilizando "sintaxe de registro" (cria funcoes automaticamente para acessar os valores que o tipo pode assumir) -}
 data Player = Player { nomeDoJogador :: String
                      , hpDoJogador :: Int
@@ -142,6 +144,7 @@ receiveDamageByPlayer dano i
 {-Nesse caso, nao estamos tratando ainda as multiplas escolhas, estamos fazendo "de conta" que a escolha é sempre a numero 1 (atacar inimigo)-}
 gerenciadorDeEscolhas 1 jogador inimigo = do {- player causa dano ao inimigo-}
   printEscolhas 1
+  
   return (jogador, receiveDamageByPlayer (ataqueDoJogador jogador) inimigo)
 
 gerenciadorDeEscolhas 2 jogador inimigo = do {-player se cura-}
@@ -220,10 +223,11 @@ redutorDeMana j manaConsumida = Player (nomeDoJogador j) (hpDoJogador j) (hpMaxD
 --seletorDeAcoes :: Int -> Int -> Int
 seletorDeAcoes j defesa defesaMagica = do
      printAcoes
-
      entrada <- getLine
+     
      let escolha = read entrada :: Int
      putStr ""
+     limpar
      printEscolhas escolha
 
 
@@ -249,6 +253,7 @@ battleManager jogador inimigo
 
     printAcoes
     x <- getLine
+    limpar
     putStrLn ""
     let escolha = read x :: Int
     a <- gerenciadorDeEscolhas escolha jogador inimigo
@@ -342,6 +347,7 @@ playerMaker 4 nome = Player (nome ++ "-- (Classe : Mago) ") 200 300 8 0 15 40 40
 {- faz com que ocorra batalhas ate o player finalizar -}
 
 battleLoop jogador 1 = do
+ limpar
  printSeparator
  putStrLn " Nova Batalha"
  printSeparator
@@ -355,6 +361,7 @@ battleLoop jogador 1 = do
    printDesejaContinuar
    printSeparator
    x <- getLine
+   limpar
    let escolha = read x :: Int
    battleLoop (playerRegen jogador (xpDropDoInimigo inimigo)) escolha
  else
@@ -384,12 +391,17 @@ enemyMaker p = do
   return (Inimigo (nomes !! indiceDoNome) (hp) (velocidade) (ataque) (defesa) (defesaMagica) (xpDrop) (nivel) (True))  
 
 
+limpar :: IO ()
+limpar = do
+  _ <- SP.system "reset"
+  return ()
+
 
 main =  do
   printSeparator
   putStrLn "Digite seu nome : "
   nome <- getLine
-  printSeparator
+  limpar
   printSeparator
   putStrLn (" Bem vindo " ++ nome)
   printClasses
