@@ -1,3 +1,4 @@
+
 import System.Random
 import qualified System.Process as SP
 
@@ -50,8 +51,6 @@ criaPlayer nome = Player nome 300 300 15 0 10 20 10 15 100 1 200 200 True
 criaInimigo :: String -> Inimigo
 criaInimigo nome = Inimigo nome 300 300 15 0 10 20 1 True
 
-
-
 {-Adiciona exp em um player passado no parametro -}
 countExp :: Int -> Player -> Player
 countExp exp j = Player (nomeDoJogador j) (hpDoJogador j) (hpMaxDoJogador j) (velocidadeDoJogador j) ((expDoJogador j) + (exp)) (ataqueDoJogador j) (danoMagicoDoJogador j) (defesaDoJogador j) (defesaMagicaDoJogador j) (controlNivelDoJogador j) (nivelDoJogador j) (manaDoJogador j) (manaMaxDoJogador j) (jogadorIsAlive j)
@@ -61,7 +60,6 @@ updatePlayerIfItsNeeded :: Player -> Player
 updatePlayerIfItsNeeded jogador
   | (expDoJogador jogador) >= (controlNivelDoJogador jogador) = setManaToMax (setHpToMax (updateControlNivelJogador (updateNivelJogador (updateDefesaMagicaJogador (updateDefesaJogador (updateAtaqueJogador (updateVelocidadeJogador (updateManaMaxJogador (updateHpMaxJogador jogador)))))))))
   | otherwise = jogador
-
 
 
 {-INÍCIO: METODOS AUXILIARES ~ Usados em "updatePlayerIfItsNeeded"-}
@@ -99,6 +97,7 @@ setHpToMax j = Player (nomeDoJogador j) (hpMaxDoJogador j) (hpMaxDoJogador j) (v
 setManaToMax :: Player -> Player
 setManaToMax j = Player (nomeDoJogador j) (hpDoJogador j) (hpMaxDoJogador j) (velocidadeDoJogador j) (expDoJogador j) (ataqueDoJogador j) (danoMagicoDoJogador j) (defesaDoJogador j) (defesaMagicaDoJogador j) (controlNivelDoJogador j) (nivelDoJogador j) (manaMaxDoJogador j) (manaMaxDoJogador j) (jogadorIsAlive j)
 
+
 {-Funcoes que realizam os calculos do dano fisico e do dano magico abaixo-}
 --calculaDanoFisico :: a -> a -> Int
 calculaDanoFisico dano defesa = round ((dano / ((defesa/100) + 1)))
@@ -116,7 +115,9 @@ receiveDamageByEnemy dano j
     | (((hpDoJogador j) - dano) <= 0) = Player (nomeDoJogador j) ((hpDoJogador j) - dano) (hpMaxDoJogador j) (velocidadeDoJogador j) (expDoJogador j) (ataqueDoJogador j) (danoMagicoDoJogador j) (defesaDoJogador j) (defesaMagicaDoJogador j) (controlNivelDoJogador j) (nivelDoJogador j) (manaDoJogador j) (manaMaxDoJogador j) (False)
     | otherwise = Player (nomeDoJogador j) ((hpDoJogador j) - dano) (hpMaxDoJogador j) (velocidadeDoJogador j) (expDoJogador j) (ataqueDoJogador j) (danoMagicoDoJogador j) (defesaDoJogador j) (defesaMagicaDoJogador j) (controlNivelDoJogador j) (nivelDoJogador j) (manaDoJogador j) (manaMaxDoJogador j) (jogadorIsAlive j)
 
+
 printSeparator = putStrLn "-------------------------------------------------------------"
+
 
 printAcoes = do
                 putStrLn ""
@@ -141,11 +142,12 @@ receiveDamageByPlayer dano i
   | otherwise = Inimigo (nomeDoInimigo i) ((hpDoInimigo i)-dano) (velocidadeDoInimigo i) (ataqueDoInimigo i) (defesaDoInimigo i) (defesaMagicaDoInimigo i) (xpDropDoInimigo i) (levelDoInimigo i) (inimigoIsAlive i)
 
 
+
 {-Nesse caso, nao estamos tratando ainda as multiplas escolhas, estamos fazendo "de conta" que a escolha é sempre a numero 1 (atacar inimigo)-}
 gerenciadorDeEscolhas 1 jogador inimigo = do {- player causa dano ao inimigo-}
-  printEscolhas 1
-  
+  printEscolhas 1  
   return (jogador, receiveDamageByPlayer (ataqueDoJogador jogador) inimigo)
+
 
 gerenciadorDeEscolhas 2 jogador inimigo = do {-player se cura-}
   printEscolhas 2
@@ -185,6 +187,7 @@ possuiManaSuficiente j x | (magiaMana j x) > (manaDoJogador j) = do
   |otherwise = do
     putStr ""
     return True
+    
 
 --printManaInsuficiente :: IO()
 printManaInsuficiente = putStrLn "Mana insuficiente para realizar tal chamado"
@@ -197,6 +200,7 @@ magiaMana :: Player -> Int -> Int
 magiaMana j 0 = 10 * (nivelDoJogador j) --cura
 magiaMana j 1 = 10 * (nivelDoJogador j) --explosion
 magiaMana j 2 = 20 * (nivelDoJogador j) --thundara
+
 
 --printExplosion :: Int -> Player -> IO()
 printExplosion x j = do
@@ -281,6 +285,7 @@ printInfoCacador = putStrLn "3 - Caçador: Apesar de suas armas à distância se
 printInfoMago :: IO()
 printInfoMago = putStrLn "4 - Mago: Apesar de dominarem poderosas magias ofensivas, os magos são frágeis e usam armaduras leves deixando-os particularmente vulneráveis contra ataques corpo a corpo"
 
+
 printClasses :: IO()
 printClasses = do
   putStrLn ""
@@ -293,7 +298,7 @@ printClasses = do
   printInfoCacador
   putStrLn ""
   printInfoMago
-  putStrLn "-----------------------------------------------------------------------------"
+  printSeparator
   putStrLn ""
 
 -- Compara atributos do player e do inimigo (ataque, defesa, defesaMagica e velocidade) - Se o resultado for negativo: Inimigo ganha. Se for positivo: Player ganha a luta
@@ -334,7 +339,6 @@ printComparacoes j i = do
   putStrLn ""
   putStrLn "-------------------------------------------------------------------"
   putStrLn ""
-
 
 
 playerMaker ::Int -> String -> Player
